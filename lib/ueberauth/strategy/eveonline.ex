@@ -161,25 +161,7 @@ defmodule Ueberauth.Strategy.EveOnline do
     user = conn.private.eveonline_user
 
     %Info{
-      name: user["name"],
-      nickname: user["login"],
-      email: user["email"] || Enum.find(user["emails"] || [], &(&1["primary"]))["email"],
-      location: user["location"],
-      urls: %{
-        followers_url: user["followers_url"],
-        avatar_url: user["avatar_url"],
-        events_url: user["events_url"],
-        starred_url: user["starred_url"],
-        blog: user["blog"],
-        subscriptions_url: user["subscriptions_url"],
-        organizations_url: user["organizations_url"],
-        gists_url: user["gists_url"],
-        following_url: user["following_url"],
-        api_url: user["url"],
-        html_url: user["html_url"],
-        received_events_url: user["received_events_url"],
-        repos_url: user["repos_url"]
-      }
+
     }
   end
 
@@ -196,22 +178,24 @@ defmodule Ueberauth.Strategy.EveOnline do
   end
 
   defp fetch_user(conn, token) do
-    conn = put_private(conn, :eveonline_token, token)
+    conn
+    |> put_private(:eveonline_token, token)
+    |> put_private(:eveonline_user, %{})
     # Will be better with Elixir 1.3 with/else
-    case Ueberauth.Strategy.EveOnline.OAuth.get(token, "/user") do
-      {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
-        set_errors!(conn, [error("token", "unauthorized")])
-      {:ok, %OAuth2.Response{status_code: status_code, body: user}} when status_code in 200..399 ->
-        case Ueberauth.Strategy.EveOnline.OAuth.get(token, "/user/emails") do
-          {:ok, %OAuth2.Response{status_code: status_code, body: emails}} when status_code in 200..399 ->
-            user = Map.put user, "emails", emails
-            put_private(conn, :eveonline_user, user)
-          {:error, _} -> # Continue on as before
-            put_private(conn, :eveonline_user, user)
-        end
-      {:error, %OAuth2.Error{reason: reason}} ->
-        set_errors!(conn, [error("OAuth2", reason)])
-    end
+    # case Ueberauth.Strategy.EveOnline.OAuth.get(token, "/user") do
+    #   {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
+    #     set_errors!(conn, [error("token", "unauthorized")])
+    #   {:ok, %OAuth2.Response{status_code: status_code, body: user}} when status_code in 200..399 ->
+    #     case Ueberauth.Strategy.EveOnline.OAuth.get(token, "/user/emails") do
+    #       {:ok, %OAuth2.Response{status_code: status_code, body: emails}} when status_code in 200..399 ->
+    #         user = Map.put user, "emails", emails
+    #         put_private(conn, :eveonline_user, user)
+    #       {:error, _} -> # Continue on as before
+    #         put_private(conn, :eveonline_user, user)
+    #     end
+    #   {:error, %OAuth2.Error{reason: reason}} ->
+    #     set_errors!(conn, [error("OAuth2", reason)])
+    # end
   end
 
   defp option(conn, key) do
