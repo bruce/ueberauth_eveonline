@@ -1,18 +1,18 @@
-defmodule UeberauthGithub.Mixfile do
+defmodule UeberauthEveOnline.Mixfile do
   use Mix.Project
 
-  @version "0.4.1"
+  @version "0.2.0"
 
   def project do
-    [app: :ueberauth_github,
+    [app: :ueberauth_eveonline,
      version: @version,
-     name: "Ueberauth Github",
+     name: "Ueberauth EveOnline",
      package: package(),
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     source_url: "https://github.com/ueberauth/ueberauth_github",
-     homepage_url: "https://github.com/ueberauth/ueberauth_github",
+     source_url: "https://github.com/bruce/ueberauth_eveonline",
+     homepage_url: "https://github.com/bruce/ueberauth_eveonline",
      description: description(),
      deps: deps(),
      docs: docs()]
@@ -41,13 +41,13 @@ defmodule UeberauthGithub.Mixfile do
   end
 
   defp description do
-    "An Ueberauth strategy for using Github to authenticate your users."
+    "An Ueberauth strategy for using EveOnline to authenticate your users."
   end
 
   defp package do
     [files: ["lib", "mix.exs", "README.md", "LICENSE"],
-      maintainers: ["Daniel Neighman"],
+      maintainers: ["Bruce Williams", "Brian O'Grady"],
       licenses: ["MIT"],
-      links: %{"GitHub": "https://github.com/ueberauth/ueberauth_github"}]
+      links: %{"GitHub": "https://eveonline.com/bruce/ueberauth_eveonline"}]
   end
 end

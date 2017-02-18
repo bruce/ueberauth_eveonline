@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :ueberauth_github, key: :value
+#     config :ueberauth_eveonline, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:ueberauth_github, :key)
+#     Application.get_env(:ueberauth_eveonline, :key)
 #
 # Or configure a 3rd-party app:
 #

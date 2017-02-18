@@ -1,34 +1,34 @@
-defmodule Ueberauth.Strategy.Github.OAuth do
+defmodule Ueberauth.Strategy.EveOnline.OAuth do
   @moduledoc """
-  An implementation of OAuth2 for github.
+  An implementation of OAuth2 for eveonline.
 
   To add your `client_id` and `client_secret` include these values in your configuration.
 
-      config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-        client_id: System.get_env("GITHUB_CLIENT_ID"),
-        client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+      config :ueberauth, Ueberauth.Strategy.EveOnline.OAuth,
+        client_id: System.get_env("EVEONLINE_CLIENT_ID"),
+        client_secret: System.get_env("EVEONLINE_CLIENT_SECRET")
   """
   use OAuth2.Strategy
 
   @defaults [
     strategy: __MODULE__,
-    site: "https://api.github.com",
-    authorize_url: "https://github.com/login/oauth/authorize",
-    token_url: "https://github.com/login/oauth/access_token",
+    site: "https://developers.eveonline.com",
+    authorize_url: "https://login.eveonline.com/oauth/authorize",
+    token_url: "https://login.eveonline.com/oauth/token",
   ]
 
   @doc """
-  Construct a client for requests to Github.
+  Construct a client for requests to EveOnline.
 
   Optionally include any OAuth2 options here to be merged with the defaults.
 
-      Ueberauth.Strategy.Github.OAuth.client(redirect_uri: "http://localhost:4000/auth/github/callback")
+      Ueberauth.Strategy.EveOnline.OAuth.client(redirect_uri: "http://localhost:4000/auth/eveonline/callback")
 
-  This will be setup automatically for you in `Ueberauth.Strategy.Github`.
+  This will be setup automatically for you in `Ueberauth.Strategy.EveOnline`.
   These options are only useful for usage outside the normal callback phase of Ueberauth.
   """
   def client(opts \\ []) do
-    config = Application.get_env(:ueberauth, Ueberauth.Strategy.Github.OAuth)
+    config = Application.get_env(:ueberauth, Ueberauth.Strategy.EveOnline.OAuth)
     client_opts =
       @defaults
       |> Keyword.merge(config)

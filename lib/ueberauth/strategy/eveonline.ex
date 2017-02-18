@@ -1,27 +1,27 @@
-defmodule Ueberauth.Strategy.Github do
+defmodule Ueberauth.Strategy.EveOnline do
   @moduledoc """
-  Provides an Ueberauth strategy for authenticating with Github.
+  Provides an Ueberauth strategy for authenticating with EveOnline.
 
   ### Setup
 
-  Create an application in Github for you to use.
+  Create an application in EveOnline for you to use.
 
-  Register a new application at: [your github developer page](https://github.com/settings/developers) and get the `client_id` and `client_secret`.
+  Register a new application at: [your EVE developer page](https://developers.eveonline.com) and get the `client_id` and `client_secret`.
 
-  Include the provider in your configuration for Ueberauth
+  Include the provider in your configuration for Ueberauth:
 
       config :ueberauth, Ueberauth,
         providers: [
-          github: { Ueberauth.Strategy.Github, [] }
+          eveonline: { Ueberauth.Strategy.EveOnline, [] }
         ]
 
-  Then include the configuration for github.
+  Then include the configuration for eveonline.
 
-      config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-        client_id: System.get_env("GITHUB_CLIENT_ID"),
-        client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+      config :ueberauth, Ueberauth.Strategy.EveOnline.OAuth,
+        client_id: System.get_env("EVEONLINE_CLIENT_ID"),
+        client_secret: System.get_env("EVEONLINE_CLIENT_SECRET")
 
-  If you haven't already, create a pipeline and setup routes for your callback handler
+  If you haven't already, create a pipeline and setup routes for your callback handler:
 
       pipeline :auth do
         Ueberauth.plug "/auth"
@@ -34,7 +34,7 @@ defmodule Ueberauth.Strategy.Github do
       end
 
 
-  Create an endpoint for the callback where you will handle the `Ueberauth.Auth` struct
+  Create an endpoint for the callback where you will handle the `Ueberauth.Auth` struct:
 
       defmodule MyApp.AuthController do
         use MyApp.Web, :controller
@@ -50,40 +50,40 @@ defmodule Ueberauth.Strategy.Github do
 
   You can edit the behaviour of the Strategy by including some options when you register your provider.
 
-  To set the `uid_field`
+  To set the `uid_field`:
 
       config :ueberauth, Ueberauth,
         providers: [
-          github: { Ueberauth.Strategy.Github, [uid_field: :email] }
+          eveonline: { Ueberauth.Strategy.EveOnline, [uid_field: :email] }
         ]
 
-  Default is `:login`
+  Default is `:login`.
 
   To set the default 'scopes' (permissions):
 
       config :ueberauth, Ueberauth,
         providers: [
-          github: { Ueberauth.Strategy.Github, [default_scope: "user,public_repo"] }
+          eveonline: { Ueberauth.Strategy.EveOnline, [default_scope: "user,public_repo"] }
         ]
 
   Default is "user,public_repo"
   """
   use Ueberauth.Strategy, uid_field: :login,
-                          default_scope: "user,public_repo",
-                          oauth2_module: Ueberauth.Strategy.Github.OAuth
+                          default_scope: "characterAccountRead,publicData",
+                          oauth2_module: Ueberauth.Strategy.EveOnline.OAuth
 
   alias Ueberauth.Auth.Info
   alias Ueberauth.Auth.Credentials
   alias Ueberauth.Auth.Extra
 
   @doc """
-  Handles the initial redirect to the github authentication page.
+  Handles the initial redirect to the EVE Online authentication page.
 
-  To customize the scope (permissions) that are requested by github include them as part of your url:
+  To customize the scope (permissions) that are requested by eveonline include them as part of your url:
 
-      "/auth/github?scope=user,public_repo,gist"
+      "/auth/eveonline?scope=characterAccountRead,publicData,characterFittingsRead"
 
-  You can also include a `state` param that github will return to you.
+  You can also include a `state` param that eveonline will return to you.
   """
   def handle_request!(conn) do
     scopes = conn.params["scope"] || option(conn, :default_scope)
@@ -97,8 +97,8 @@ defmodule Ueberauth.Strategy.Github do
   end
 
   @doc """
-  Handles the callback from Github. When there is a failure from Github the failure is included in the
-  `ueberauth_failure` struct. Otherwise the information returned from Github is returned in the `Ueberauth.Auth` struct.
+  Handles the callback from EveOnline. When there is a failure from EveOnline the failure is included in the
+  `ueberauth_failure` struct. Otherwise the information returned from EveOnline is returned in the `Ueberauth.Auth` struct.
   """
   def handle_callback!(%Plug.Conn{params: %{"code" => code}} = conn) do
     module = option(conn, :oauth2_module)
@@ -117,30 +117,30 @@ defmodule Ueberauth.Strategy.Github do
   end
 
   @doc """
-  Cleans up the private area of the connection used for passing the raw Github response around during the callback.
+  Cleans up the private area of the connection used for passing the raw EveOnline response around during the callback.
   """
   def handle_cleanup!(conn) do
     conn
-    |> put_private(:github_user, nil)
-    |> put_private(:github_token, nil)
+    |> put_private(:eveonline_user, nil)
+    |> put_private(:eveonline_token, nil)
   end
 
   @doc """
-  Fetches the uid field from the Github response. This defaults to the option `uid_field` which in-turn defaults to `login`
+  Fetches the uid field from the EveOnline response. This defaults to the option `uid_field` which in-turn defaults to `login`
   """
   def uid(conn) do
     user =
       conn
       |> option(:uid_field)
       |> to_string
-    conn.private.github_user[user]
+    conn.private.eveonline_user[user]
   end
 
   @doc """
-  Includes the credentials from the Github response.
+  Includes the credentials from the EveOnline response.
   """
   def credentials(conn) do
-    token        = conn.private.github_token
+    token        = conn.private.eveonline_token
     scope_string = (token.other_params["scope"] || "")
     scopes       = String.split(scope_string, ",")
 
@@ -158,7 +158,7 @@ defmodule Ueberauth.Strategy.Github do
   Fetches the fields to populate the info section of the `Ueberauth.Auth` struct.
   """
   def info(conn) do
-    user = conn.private.github_user
+    user = conn.private.eveonline_user
 
     %Info{
       name: user["name"],
@@ -184,30 +184,30 @@ defmodule Ueberauth.Strategy.Github do
   end
 
   @doc """
-  Stores the raw information (including the token) obtained from the Github callback.
+  Stores the raw information (including the token) obtained from the EveOnline callback.
   """
   def extra(conn) do
     %Extra {
       raw_info: %{
-        token: conn.private.github_token,
-        user: conn.private.github_user
+        token: conn.private.eveonline_token,
+        user: conn.private.eveonline_user
       }
     }
   end
 
   defp fetch_user(conn, token) do
-    conn = put_private(conn, :github_token, token)
+    conn = put_private(conn, :eveonline_token, token)
     # Will be better with Elixir 1.3 with/else
-    case Ueberauth.Strategy.Github.OAuth.get(token, "/user") do
+    case Ueberauth.Strategy.EveOnline.OAuth.get(token, "/user") do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
       {:ok, %OAuth2.Response{status_code: status_code, body: user}} when status_code in 200..399 ->
-        case Ueberauth.Strategy.Github.OAuth.get(token, "/user/emails") do
+        case Ueberauth.Strategy.EveOnline.OAuth.get(token, "/user/emails") do
           {:ok, %OAuth2.Response{status_code: status_code, body: emails}} when status_code in 200..399 ->
             user = Map.put user, "emails", emails
-            put_private(conn, :github_user, user)
+            put_private(conn, :eveonline_user, user)
           {:error, _} -> # Continue on as before
-            put_private(conn, :github_user, user)
+            put_private(conn, :eveonline_user, user)
         end
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])

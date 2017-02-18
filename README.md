@@ -1,16 +1,16 @@
-# Überauth GitHub
+# Überauth EveOnline
 
-> GitHub OAuth2 strategy for Überauth.
+> EveOnline OAuth2 strategy for Überauth.
 
 ## Installation
 
-1. Setup your application at [GitHub Developer](https://developer.github.com).
+1. Setup your application at the [EVE Developer site](https://developers.eveonline.com)
 
-1. Add `:ueberauth_github` to your list of dependencies in `mix.exs`:
+1. Add `:ueberauth_eveonline` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:ueberauth_github, "~> 0.4"}]
+      [{:ueberauth_eveonline, "~> 0.2"}]
     end
     ```
 
@@ -18,25 +18,25 @@
 
     ```elixir
     def application do
-      [applications: [:ueberauth_github]]
+      [applications: [:ueberauth_eveonline]]
     end
     ```
 
-1. Add GitHub to your Überauth configuration:
+1. Add EveOnline to your Überauth configuration:
 
     ```elixir
     config :ueberauth, Ueberauth,
       providers: [
-        github: {Ueberauth.Strategy.Github, []}
+        eveonline: {Ueberauth.Strategy.EveOnline, []}
       ]
     ```
 
 1.  Update your provider configuration:
 
     ```elixir
-    config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-      client_id: System.get_env("GITHUB_CLIENT_ID"),
-      client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+    config :ueberauth, Ueberauth.Strategy.EveOnline.OAuth,
+      client_id: System.get_env("EVEONLINE_CLIENT_ID"),
+      client_secret: System.get_env("EVEONLINE_CLIENT_SECRET")
     ```
 
 1.  Include the Überauth plug in your controller:
@@ -65,27 +65,25 @@
 
 1. You controller needs to implement callbacks to deal with `Ueberauth.Auth` and `Ueberauth.Failure` responses.
 
-For an example implementation see the [Überauth Example](https://github.com/ueberauth/ueberauth_example) application.
-
 ## Calling
 
 Depending on the configured url you can initial the request through:
 
-    /auth/github
+    /auth/eveonline
 
 Or with options:
 
-    /auth/github?scope=user,public_repo
+    /auth/eveonline?scope=characterAccountRead,publicData
 
-By default the requested scope is "user,public\_repo". Scope can be configured either explicitly as a `scope` query value on the request path or in your configuration:
+By default the requested scope is "characterAccountRead,publicData". Scope can be configured either explicitly as a `scope` query value on the request path or in your configuration:
 
 ```elixir
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user,public_repo,notifications"]}
+    eveonline: {Ueberauth.Strategy.EveOnline, [default_scope: "characterAccountRead,publicData,characterFittingsRead"]}
   ]
 ```
 
 ## License
 
-Please see [LICENSE](https://github.com/ueberauth/ueberauth_github/blob/master/LICENSE) for licensing details.
+Please see [LICENSE](https://github.com/bruce/ueberauth_eveonline/blob/master/LICENSE) for licensing details.
