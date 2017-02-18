@@ -12,7 +12,7 @@ defmodule Ueberauth.Strategy.EveOnline.OAuth do
 
   @defaults [
     strategy: __MODULE__,
-    site: "https://developers.eveonline.com",
+    site: "https://login.eveonline.com",
     authorize_url: "https://login.eveonline.com/oauth/authorize",
     token_url: "https://login.eveonline.com/oauth/token",
   ]
