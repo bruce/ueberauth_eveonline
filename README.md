@@ -48,7 +48,7 @@
       pipeline :browser do
         plug Ueberauth
         ...
-       end
+      end
     end
     ```
 
@@ -73,14 +73,14 @@ Depending on the configured url you can initial the request through:
 
 Or with options:
 
-    /auth/eveonline?scope=characterAccountRead,publicData
+    /auth/eveonline?scope=characterAccountRead+publicData
 
-By default the requested scope is "characterAccountRead,publicData". Scope can be configured either explicitly as a `scope` query value on the request path or in your configuration:
+By default the requested scope is "characterAccountRead publicData". Scope can be configured either explicitly as a `scope` query value on the request path or in your configuration:
 
 ```elixir
 config :ueberauth, Ueberauth,
   providers: [
-    eveonline: {Ueberauth.Strategy.EveOnline, [default_scope: "characterAccountRead,publicData,characterFittingsRead"]}
+    eveonline: {Ueberauth.Strategy.EveOnline, [default_scope: "characterAccountRead publicData characterFittingsRead"]}
   ]
 ```
 

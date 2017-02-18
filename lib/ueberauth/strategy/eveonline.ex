@@ -69,7 +69,7 @@ defmodule Ueberauth.Strategy.EveOnline do
   Default is "user,public_repo"
   """
   use Ueberauth.Strategy, uid_field: :login,
-                          default_scope: "characterAccountRead,publicData",
+                          default_scope: "characterAccountRead publicData",
                           oauth2_module: Ueberauth.Strategy.EveOnline.OAuth
 
   alias Ueberauth.Auth.Info
@@ -81,7 +81,7 @@ defmodule Ueberauth.Strategy.EveOnline do
 
   To customize the scope (permissions) that are requested by eveonline include them as part of your url:
 
-      "/auth/eveonline?scope=characterAccountRead,publicData,characterFittingsRead"
+      "/auth/eveonline?scope=characterAccountRead publicData characterFittingsRead"
 
   You can also include a `state` param that eveonline will return to you.
   """
